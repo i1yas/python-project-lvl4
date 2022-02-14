@@ -1,5 +1,8 @@
 *.pyc
 
+# DB
+*.sqlite3
+
 # Packages
 *.egg
 !/tests/**/*.egg
