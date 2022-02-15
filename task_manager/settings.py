@@ -10,7 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
+import json
 from pathlib import Path
+import dj_database_url
+from dotenv import dotenv_values
+
+
+env = {
+    **dotenv_values(".env"),
+    **os.environ,
+}
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +31,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i75y*5g@1b&(!4fp(b=%l8#9skgqe!lbj1jm6rw-h*g2r(79w('
+SECRET_KEY = env["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.get("DEBUG") 
 
 ALLOWED_HOSTS = []
+
+if not DEBUG:
+    ALLOWED_HOSTS = json.loads(env["ALLOWED_HOSTS"])
 
 
 # Application definition
@@ -80,6 +94,12 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if env.get("DATABASE_URL"):
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=True,
+    )
 
 
 # Password validation
